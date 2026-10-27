@@ -36,11 +36,14 @@ class SneakerSizeSerializer(serializers.ModelSerializer):
 
 class SneakerListSerializer(serializers.ModelSerializer):
     brand = serializers.CharField(source="brand.name", read_only=True)
+    sizes = serializers.SerializerMethodField()
 
     class Meta:
         model = Sneaker
-        fields = ["id", "name", "brand", "price", "category", "gender"]
+        fields = ["id", "name", "brand", "price", "category", "gender", "sizes"]
 
+    def get_sizes(self, obj):
+        return [float(item.size) for item in obj.sizes.all().order_by('size')]
 
 class SneakerDetailSerializer(serializers.ModelSerializer):
     brand = serializers.CharField(source="brand.name", read_only=True)
