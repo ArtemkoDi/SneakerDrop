@@ -1,79 +1,245 @@
 {
-	"info": {
-		"name": "SneakerDrop API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://127.0.0.1:8000",
-			"type": "string"
-		}
-	],
-	"item": [
-		{
-			"name": "1. GET Усі кросівки (Успіх)",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/api/sneakers/",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"sneakers",
-						""
-					]
-				}
-			}
-		},
-		{
-			"name": "2. POST Створити бренд (Успіх)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Puma\",\n    \"description\": \"Спортивний бренд\"\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}/api/brands/",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"brands",
-						""
-					]
-				}
-			}
-		},
-		{
-			"name": "3. DELETE Видалити бренд з товарами (Помилка 409)",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/api/brands/1/",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"brands",
-						"1",
-						""
-					]
-				}
-			}
-		}
-	]
+  "info": {
+    "name": "SneakerDrop API",
+    "description": "Колекція запитів для перевірки лабораторної роботи: автентифікація JWT та ролі доступу.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Реєстрація нового користувача",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"artem_customer\",\n    \"email\": \"customer@sneakerdrop.ua\",\n    \"first_name\": \"Артем\",\n    \"last_name\": \"Бла\",\n    \"password\": \"SneakerSecure2026!\",\n    \"password_confirm\": \"SneakerSecure2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register", ""]
+            }
+          }
+        },
+        {
+          "name": "Вхід і генерація JWT токенів",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set(\"access_token\", data.access);",
+                  "    pm.collectionVariables.set(\"refresh_token\", data.refresh);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"artem_customer\",\n    \"password\": \"SneakerSecure2026!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login", ""]
+            }
+          }
+        },
+        {
+          "name": "Оновлення access токена",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var data = pm.response.json();",
+                  "    pm.collectionVariables.set(\"access_token\", data.access);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", "refresh", ""]
+            }
+          }
+        },
+        {
+          "name": "Отримання даних поточного користувача",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shop",
+      "item": [
+        {
+          "name": "Перегляд каталогу товарів",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sneakers/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sneakers", ""]
+            }
+          }
+        },
+        {
+          "name": "Створення бренду (Адміністратор)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"New Balance\",\n    \"description\": \"Класичне спортивне взуття преміум-якості\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/brands/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "brands", ""]
+            }
+          }
+        },
+        {
+          "name": "Видалення зв'язаного бренду (Перевірка конфлікту 409)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/brands/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "brands", "1", ""]
+            }
+          }
+        },
+        {
+          "name": "Додавання товару анонімом (Перевірка 401 Unauthorized)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Nike Dunk Low Retro\",\n    \"brand_id\": 1,\n    \"category\": \"Lifestyle\",\n    \"price\": \"4299.00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sneakers/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sneakers", ""]
+            }
+          }
+        },
+        {
+          "name": "Додавання товару не-адміном (Перевірка 403 Forbidden)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Nike Dunk Low Retro\",\n    \"brand_id\": 1,\n    \"category\": \"Lifestyle\",\n    \"price\": \"4299.00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sneakers/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sneakers", ""]
+            }
+          }
+        }
+      ]
+    }
+  ]
 }
