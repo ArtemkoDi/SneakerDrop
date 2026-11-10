@@ -1,0 +1,79 @@
+{
+	"info": {
+		"name": "SneakerDrop API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. GET Усі кросівки (Успіх)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/sneakers/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"sneakers",
+						""
+					]
+				}
+			}
+		},
+		{
+			"name": "2. POST Створити бренд (Успіх)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Puma\",\n    \"description\": \"Спортивний бренд\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/brands/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"brands",
+						""
+					]
+				}
+			}
+		},
+		{
+			"name": "3. DELETE Видалити бренд з товарами (Помилка 409)",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/brands/1/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"brands",
+						"1",
+						""
+					]
+				}
+			}
+		}
+	]
+}
