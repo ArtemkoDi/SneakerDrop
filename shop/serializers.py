@@ -42,7 +42,7 @@ class SneakerListSerializer(serializers.ModelSerializer):
         model = Sneaker
         fields = ["id", "name", "brand", "price", "category", "gender", "sizes"]
 
-    def get_sizes(self, obj):
+    def get_sizes(self, obj) -> list[float]:
         return [float(item.size) for item in obj.sizes.all().order_by('size')]
 
 class SneakerDetailSerializer(serializers.ModelSerializer):
@@ -67,7 +67,7 @@ class SneakerDetailSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-    def get_sizes(self, obj):
+    def get_sizes(self, obj) -> list[float]:
         return [float(item.size) for item in obj.sizes.all()]
 
     def validate_price(self, value):
