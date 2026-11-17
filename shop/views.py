@@ -2,6 +2,7 @@ from django.db.models import ProtectedError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .permissions import IsAdminOrReadOnly
 
 from .models import Brand, Sneaker, SneakerSize
 from .serializers import (
@@ -25,6 +26,8 @@ def error_response(
 
 
 class BrandListCreateView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request):
         brands = Brand.objects.all().order_by("name")
         serializer = BrandSerializer(brands, many=True)
@@ -44,6 +47,8 @@ class BrandListCreateView(APIView):
 
 
 class BrandDetailView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get_object(self, pk):
         try:
             return Brand.objects.get(pk=pk)
@@ -101,6 +106,8 @@ class BrandDetailView(APIView):
 
 
 class SneakerListCreateView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request):
         queryset = (
             Sneaker.objects.all().select_related("brand").prefetch_related("sizes")
@@ -159,6 +166,8 @@ class SneakerListCreateView(APIView):
 
 
 class SneakerDetailView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get_object(self, pk):
         try:
             return (
@@ -212,6 +221,8 @@ class SneakerDetailView(APIView):
 
 
 class SneakerSizeListCreateView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request):
         sneaker_id = request.query_params.get("sneaker")
         queryset = SneakerSize.objects.all()
@@ -242,6 +253,8 @@ class SneakerSizeListCreateView(APIView):
 
 
 class SneakerSizeDetailView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get_object(self, pk):
         try:
             return SneakerSize.objects.get(pk=pk)
